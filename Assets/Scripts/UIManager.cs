@@ -1,43 +1,40 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private GameObject resultContainer;
+    [SerializeField] private GameObject container;
     [SerializeField] private GameObject textPrefab;
-    [SerializeField] private List<GameObject> resultsTextBoxes = new List<GameObject>();
+    [SerializeField] private TextMeshProUGUI scoreText;
 
-    private void OnEnable()
+    private int score;
+
+    public static UIManager Instance { get; private set; }
+    private CatScript catScript;
+
+    private void Awake()
     {
-        DiceRoller.OnDiceRoll += SetDiceUI;
-        Dice.OnDiceResult += SetText;
+        Instance = this;
+        catScript = CatScript.Instance;
     }
 
-    private void OnDisable()
+    private void Start()
     {
-        DiceRoller.OnDiceRoll += SetDiceUI;
-        Dice.OnDiceResult += SetText;
+        score = 0;
     }
 
-    private void SetDiceUI(int _diceRolled)
+    public void UpdateScore()
     {
-        foreach (var textBox in resultsTextBoxes)
-        {
-            Destroy(textBox);
-        }
-
-        resultsTextBoxes.Clear();
-
-        for (int i = 0; i < _diceRolled; i++)
-        {
-            resultsTextBoxes.Add(Instantiate(textPrefab, resultContainer.transform));
-        }
+        score++;
+        UIUpdate();
     }
 
-    private void SetText(int _diceIndex, int _diceResult)
+    public void UIUpdate()
     {
-        resultsTextBoxes[_diceIndex].GetComponent<TMP_Text>().text = $"Dice {_diceIndex +  1} rolled a {_diceResult}";
+        scoreText.text = score.ToString() + " head pats.";
     }
 }
